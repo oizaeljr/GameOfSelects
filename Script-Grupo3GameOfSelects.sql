@@ -69,7 +69,6 @@ CREATE TABLE moveset (
 CREATE TABLE batalha (
     idBatalha INT PRIMARY KEY AUTO_INCREMENT,
     fkBatalha_Competicao INT,
-    batalhaCol VARCHAR(45),
     fkBatalha_Treinador1 INT,
     fkBatalha_Treinador2 INT,
     vencedor INT,
@@ -368,20 +367,40 @@ INSERT INTO ginasio (nome, lider, fkGinasio_Insignia) VALUES
     ('Ginásio Vermilion', 'Lt. Surge', 2),
     ('Ginásio Cinnabar', 'Blaine', 4),
     ('Ginásio Celadon', 'Erika', 5);
-    
+
+-- fácil
 SELECT e.vulgo, max(a.valor) as MaiorAposta FROM espectador as e JOIN aposta as a ON a.fkAposta_Apostador = e.idApostador WHERE e.vulgo LIKE 'b%' and e.vulgo LIKE '%h_' group by e.vulgo;
 SELECT * FROM habilidade WHERE nome LIKE '%a' and tipo like '%a' and descricao like '%oponente%';
-SELECT * FROM habilidade WHERE nome LIKE '%a' and tipo like '%a' and descricao like '%oponente%';
+SELECT dia FROM batalha WHERE vencedor = 1;
 SELECT * FROM pokedex WHERE nome LIKE '%saur';
+SELECT * FROM entrada WHERE valor > 20 AND valor < 100 AND tipo LIKE '%d_' ORDER BY idEntrada DESC;
+SELECT nome, lider FROM ginasio WHERE nome LIKE '% _e%' ORDER BY lider;
+SELECT * FROM pokemon WHERE peso > 50 AND tamanho < 10 AND apelido LIKE '%x';
+SELECT idEntrada, valor, tipo FROM entrada WHERE valor > 20 AND valor < 200 AND tipo = 'Numerada';
+SELECT nome, descricao, categoria, carga FROM habilidade WHERE categoria = 'Especial' AND tipo = 'Elétrico';
+SELECT * FROM competicao WHERE ganhador LIKE '%h %' AND premiacao = 50000;
+SELECT idApostador FROM espectador WHERE vulgo = 'Bolacha';
+SELECT * FROM caseInsignia WHERE dtConquista > '2024-02-01' AND dtConquista < '2024-02-29';
+SELECT * FROM aposta WHERE odd > 1.8 AND treinadorApostado = 1;
+SELECT fkBatalha_Treinador1, fkBatalha_Treinador2 FROM batalha WHERE custoReparo >= 190 AND custoReparo <= 500;
+SELECT apelido, categoria, peso, tamanho FROM pokemon WHERE apelido LIKE '%a%' OR apelido LIKE '%e%' OR apelido LIKE '%i%' OR apelido LIKE '%o%' OR apelido LIKE '%u%';
+SELECT * FROM treinador WHERE idade = '14' OR nome = 'Brock';
 
 
---
+-- médio
 SELECT count(nome) FROM pokedex WHERE tipo1 = 'veneno' AND nome LIKE '%a';
 SELECT e.vulgo, max(a.valor) as MaiorAposta FROM espectador as e JOIN aposta as a ON a.fkAposta_Apostador = e.idApostador WHERE e.vulgo LIKE 'b%' and e.vulgo LIKE '%h_' group by e.vulgo;
 SELECT count(a.fkAposta_Apostador) as QuantidadeApostas FROM aposta as a JOIN batalha as b ON b.idBatalha = a.fkAposta_Batalha  JOIN competicao as c ON c.idCompeticao = b.fkBatalha_Competicao WHERE dtInicio >= '2024-01-01' and dtFim <= '2024-12-31';
+SELECT t.nome FROM treinador AS t JOIN caseInsignia AS ci ON t.idTreinador = ci.fkCaseInsignia_Treinador ORDER BY ci.dtConquista DESC LIMIT 1;
+SELECT treinador.nome FROM treinador JOIN caseInsignia ON caseInsignia.fkCaseInsignia_Treinador = treinador.idTreinador JOIN insignia ON insignia.idInsignia = caseInsignia.fkCaseInsignia_Insignia JOIN ginasio ON ginasio.fkGinasio_Insignia = insignia.idInsignia WHERE ginasio.lider = 'Misty';
 
 
+-- difícil
+SELECT p.apelido, COUNT(*) AS vezes_usado FROM pokemon p INNER JOIN treinador t ON p.fkPokemon_TreinadorMestre = t.idTreinador INNER JOIN caseInsignia ci ON t.idTreinador = ci.fkCaseInsignia_Treinador INNER JOIN insignia i ON ci.fkCaseInsignia_Insignia = i.idInsignia WHERE i.nome = 'Insígnia Rocha' GROUP BY p.apelido ORDER BY vezes_usado DESC LIMIT 1;
+SELECT count(idPokedex) AS qtd, tipo1 FROM pokedex GROUP BY tipo1 ORDER BY qtd DESC LIMIT 3;
+SELECT espectador.vulgo, aposta.valor, aposta.odd FROM espectador LEFT JOIN aposta ON espectador.idApostador = aposta.fkAposta_Apostador;
 
-SELECT h.nome FROM habilidade as h JOIN moveset as m ON m.fkMoveset_Habilidade = h.idHabilidade JOIN pokemon as p ON p.idPokemon = m.fkMoveset_Pokemon JOIN treinador as t ON t.idTreinador = p.fkPokemon_TreinadorMestre JOIN batalha as b ON t.idTreinador = t.fkTreinador_Batalha;
-SELECT e.idApostador, e.vulgo, c.idCompeticao, c.nome AS nome_competicao, t.idTreinador, t.nome AS nome_treinador, p.idPokemon, p.apelido, h.idHabilidade, h.nome AS nome_habilidade, m.idMoveset, m.numeracao, b.idBatalha, b.batalhaCol, a.idAposta, a.valor, en.idEntrada, en.tipo, i.idInsignia, i.nome AS nome_insignia, ci.idCaseInsignia, ci.dtConquista, g.idGinasio, g.nome AS nome_ginasio FROM espectador e INNER JOIN aposta a ON e.idApostador = a.fkAposta_Apostador INNER JOIN batalha b ON a.fkAposta_Batalha = b.idBatalha INNER JOIN treinador t ON b.fkBatalha_Treinador1 = t.idTreinador INNER JOIN pokemon p ON t.idTreinador = p.fkPokemon_TreinadorMestre INNER JOIN moveset m ON p.idPokemon = m.fkMoveset_Pokemon INNER JOIN habilidade h ON m.fkMoveset_Habilidade = h.idHabilidade INNER JOIN competicao c ON b.fkBatalha_Competicao = c.idCompeticao INNER JOIN entrada en ON b.idBatalha = en.fkEntrada_Batalha INNER JOIN insignia i ON en.fkEntrada_Apostador = i.idInsignia INNER JOIN caseInsignia ci ON i.idInsignia = ci.fkCaseInsignia_Insignia INNER JOIN ginasio g ON ci.fkCaseInsignia_Treinador = g.idGinasio;
 
+-- challenge
+SELECT h.nome FROM habilidade as h JOIN moveset as m ON m.fkMoveset_Habilidade = h.idHabilidade JOIN pokemon as p ON p.idPokemon = m.fkMoveset_Pokemon JOIN treinador as t ON t.idTreinador = p.fkPokemon_TreinadorMestre JOIN batalha as b ON t.idTreinador = b.fkBatalha_Treinador1 JOIN aposta AS a ON a.fkAposta_Batalha = b.idBatalha ORDER BY valor LIMIT 1;
+SELECT e.idApostador, e.vulgo, c.idCompeticao, c.nome AS nome_competicao, t.idTreinador, t.nome AS nome_treinador, p.idPokemon, p.apelido, h.idHabilidade, h.nome AS nome_habilidade, m.idMoveset, m.numeracao, b.idBatalha, a.idAposta, a.valor, en.idEntrada, en.tipo, i.idInsignia, i.nome AS nome_insignia, ci.idCaseInsignia, ci.dtConquista, g.idGinasio, g.nome AS nome_ginasio FROM espectador e INNER JOIN aposta a ON e.idApostador = a.fkAposta_Apostador INNER JOIN batalha b ON a.fkAposta_Batalha = b.idBatalha INNER JOIN treinador t ON b.fkBatalha_Treinador1 = t.idTreinador INNER JOIN pokemon p ON t.idTreinador = p.fkPokemon_TreinadorMestre INNER JOIN moveset m ON p.idPokemon = m.fkMoveset_Pokemon INNER JOIN habilidade h ON m.fkMoveset_Habilidade = h.idHabilidade INNER JOIN competicao c ON b.fkBatalha_Competicao = c.idCompeticao INNER JOIN entrada en ON b.idBatalha = en.fkEntrada_Batalha INNER JOIN insignia i ON en.fkEntrada_Apostador = i.idInsignia INNER JOIN caseInsignia ci ON i.idInsignia = ci.fkCaseInsignia_Insignia INNER JOIN ginasio g ON ci.fkCaseInsignia_Treinador = g.idGinasio;
